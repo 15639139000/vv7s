@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.RemarkDao">
+	
+	<resultMap type="Remark" id="RemarkMap">
+		<id column="RE_ID" property="reId"/>
+		<result column="RE_CONTENT" property="reContent"/>
+		<result column="RE_DATE" property="reDate"/>
+		<result column="RE_CALLDATE" property="reCallDate"/>
+		<association column="E_ID" property="employee" select="com.jm.dao.EmployeeDao.getEmployeeByEid"></association>
+	</resultMap>
+	
+	<!-- 获取所有备忘 -->
+	<select id="getAll" resultMap="RemarkMap">
+		SELECT * FROM REMARK ORDER BY RE_DATE DESC
+	</select>
+	
+	<!-- 根据id查询备忘详情 -->
+	<select id="getRemarkById" parameterType = "int" resultMap="RemarkMap">
+		SELECT * FROM REMARK WHERE RE_ID = #{reId}
+	</select>
+	
+	<!-- 首页备忘时间查询备忘内容 -->
+	<select id="getRemarkByDate" parameterType = "Remark" resultMap="RemarkMap">
+		SELECT * FROM REMARK WHERE RE_CALLDATE = #{reCallDate} AND E_ID = #{employee.eId}; 
+	</select>
+	
+	<!-- 新增备忘 -->
+	<insert id="insertRemark" parameterType="Remark">
+		INSERT IGNORE INTO REMARK VALUES(NULL,#{reContent}, NOW(), #{reCallDate}, #{employee.eId})
+	</insert>
+	
+	<!-- 删除备忘 -->
+	<delete id="delRemarkById" parameterType="Integer">
+		DELETE FROM REMARK WHERE RE_ID = #{reId}
+	</delete>
+	
+	<!-- 修改备忘 -->
+	<update id="editRemarkByDate" parameterType="Remark">
+		UPDATE REMARK SET 
+					RE_CONTENT = #{reContent},
+					RE_DATE = NOW() 
+					WHERE E_ID = #{employee.eId} 
+					AND 
+					RE_CALLDATE = #{reCallDate}  
+	</update>
+	
+</mapper>

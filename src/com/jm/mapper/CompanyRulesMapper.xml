@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.CompanyRulesDao">
+	
+	<resultMap type="CompanyRules" id="CompanyRulesMap">
+		<id column="CR_ID" property="crId"/>
+		<result column="CR_TITLE" property="crTitle"/>
+		<result column="CR_CONTENT" property="crContent"/>
+		<result column="CR_DATE" property="crDate"/>
+		<association column="C_ID" property="company" select="com.jm.dao.CompanyDao.getCompanyById"></association>
+		<association column="D_ID" property="dept" select="com.jm.dao.DepartmentDao.getDepartmentByDid"></association>
+		<association column="E_ID" property="employee" select="com.jm.dao.EmployeeDao.getEmployeeByEid"></association>
+	</resultMap>
+	
+	<!-- 获取所有公司制度 -->
+	<select id="getAll" resultMap="CompanyRulesMap">
+		SELECT * FROM COMPANY_RULES ORDER BY CR_DATE DESC
+	</select>
+	
+	<!-- 根据id查询制度详情 -->
+	<select id="getCompanyRulesById" parameterType = "int" resultMap="CompanyRulesMap">
+		SELECT * FROM COMPANY_RULES WHERE CR_ID = #{crId}
+	</select>
+	
+	<!-- 首页根据时间显示最新的七条 -->
+	<select id="getCompanyRulesByDate" resultMap="CompanyRulesMap">
+		SELECT * FROM COMPANY_RULES ORDER BY CR_DATE DESC LIMIT 0,7
+	</select>
+	
+	<!-- 发布公司制度 -->
+	<insert id="insertCompanyRules" parameterType="CompanyRules">
+		INSERT IGNORE INTO COMPANY_RULES VALUES(NULL, #{crTitle}, #{crContent}, NOW(), #{company.cId}, #{dept.dId}, #{employee.eId})
+	</insert>
+	
+	<!-- 删除公司制度 -->
+	<delete id="delCompanyRulesById" parameterType="Integer">
+		DELETE FROM COMPANY_RULES WHERE CR_ID = #{crId}
+	</delete>
+	
+	<!-- 修改公司制度 -->
+	<update id="editCompanyRulesById" parameterType="CompanyRules">
+		UPDATE COMPANY_RULES SET 
+					CR_TITLE = #{crTitle}, CR_CONTENT = #{crContent}, 
+					CR_DATE = NOW(), C_ID = #{company.cId}, D_ID = #{dept.dId}, 
+					E_ID = #{employee.eId} WHERE CR_ID = #{crId}
+	</update>
+	
+</mapper>

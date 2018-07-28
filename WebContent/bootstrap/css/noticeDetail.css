@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+.notice_box{
+	width: 1300px;
+	height: 100%;
+	padding-left: 150px;
+	
+}
+			
+.notice_contion{
+	padding-top: 10px;
+}
+.notice_contion span{
+	display: inline-block;
+	text-indent: 2em;
+}
+.notice_box h3{
+	margin: 0 auto;
+	font-family: "微软雅黑" arial;
+	font-style: normal;
+	text-align: center;
+}
+.notice_time{
+	padding-left: 1050px;
+	text-align:center;
+}

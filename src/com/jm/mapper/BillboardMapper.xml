@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.BillboardDao">
+	
+	<resultMap type="Billboard" id="BillboardMap">
+		<id column="BID" property="bId"/>
+		<result column="NAME" property="name"/>
+		<result column="PHOTO" property="photo"/>
+		<result column="RANK" property="rank"/>
+		<result column="TEAM" property="team"/>
+		<result column="DATE" property="bDate"/>
+	</resultMap>
+	
+	<!-- 获取所有龙虎榜 -->
+	<select id="getAll" resultMap="BillboardMap">
+		SELECT * FROM BILLBOARD ORDER BY RANK ASC
+	</select>
+	
+	<!-- 根据id查询详情 -->
+	<select id="getBillboardById" parameterType = "int" resultMap="BillboardMap">
+		SELECT * FROM BILLBOARD WHERE B_ID = #{nbId}
+	</select>
+	
+	<!-- 首页根据时间显示最新的七条 -->
+	<select id="getBillboardByDate" resultMap="BillboardMap">
+		SELECT * FROM BILLBOARD ORDER BY NB_DATE DESC LIMIT 0,7
+	</select>
+	
+	<!-- 发布龙虎榜 -->
+	<insert id="insertBillboard" parameterType="Billboard">
+		INSERT IGNORE INTO BILLBOARD VALUES(NULL, #{name}, #{photo},#{rank},#{team}, #{bDate},NULL,NULL)
+	</insert>
+	
+	<!-- 删除龙虎榜 -->
+	<delete id="delBillboardById" parameterType="Integer">
+		DELETE FROM BILLBOARD WHERE BID = #{bId}
+	</delete>
+	
+	<!-- 修改龙虎榜 -->
+	<update id="editBillboardById" parameterType="Billboard">
+		UPDATE BILLBOARD SET NAME = #{name},
+		<if test="photo != null" >  
+         PHOTO = #{photo},  
+        </if>  
+		RANk = #{rank}, TEAM = #{team}, DATE = #{bDate} 
+		WHERE BID = #{bId}
+	</update>
+	
+</mapper>

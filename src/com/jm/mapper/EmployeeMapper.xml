@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.EmployeeDao">
+	
+	<!-- <cache></cache> -->
+	
+	<resultMap type="Employee" id="EmployeeMap">
+		<id column="E_ID" property="eId"/>
+		<result column="USERNAME" property="username"/>
+		<result column="PASSWORD" property="password"/>
+		<result column="E_NAME" property="eName"/>
+		<result column="E_SEX" property="eSex"/>
+		<result column="E_BIRTH" property="eBirth"/>
+		<result column="E_BIRTH" property="eBirth1"/>
+		<result column="E_AGE" property="eAge"/>
+		<result column="E_EDUCATION" property="eEducation"/>
+		<result column="E_ORIGIN" property="eOrigin"/>
+		<result column="E_IDCARD" property="eIdcard"/>
+		<result column="E_PHONE" property="ePhone"/>
+		<result column="E_EMAIL" property="eEmail"/>
+		<result column="E_ADDRESS" property="eAddress"/>
+		<result column="E_MANAGER" property="eManager"/>
+		<result column="E_LEADER" property="eLeader"/>
+		<result column="E_REGION" property="eRegion"/>
+		<result column="E_HIREDATE" property="eHiredate"/>
+		<result column="E_HIREDATE" property="eHiredate1"/>
+		<result column="E_FORMAL_DATE" property="eFormalDate"/>
+		<result column="E_FORMAL_DATE" property="eFormalDate1"/>
+		<result column="E_IMAGE" property="eImage"/>
+		<association column="N_ID" property="nation" select="com.jm.dao.NationDao.getNationById"></association>
+		<association column="D_ID" property="dept" select="com.jm.dao.DepartmentDao.getDepartmentByDid"></association>
+		<association column="S_ID" property="state" select="com.jm.dao.StateDao.getStateById"></association>
+	</resultMap>
+	
+	<resultMap type="com.jm.entity.Role" id="RoleA">
+	     <id property="rId" column="r_id"/>
+	     <result property="rName" column="r_name"/>
+	     
+	     <collection property="employee" ofType="com.jm.entity.Employee">
+	         <id property="eId" column="e_id"/>
+	         <result property="username" column="username"/>
+	     </collection>
+	</resultMap>
+	
+	<!-- 验证用户名 -->
+	<select id="checkUsername" resultType="Integer">
+		SELECT COUNT(E_ID) FROM EMPLOYEE WHERE USERNAME = #{username}
+	</select>
+		
+	<!-- 根据职员编号返回职员记录 -->
+	<select id="getEmployeeByEid" resultMap="EmployeeMap">
+		SELECT * FROM EMPLOYEE WHERE E_ID = #{eId}
+	</select>
+	
+	<select id="getEmployeeByName" resultMap="EmployeeMap">
+		SELECT * FROM EMPLOYEE WHERE USERNAME = #{username}
+	</select>
+	
+	<select id="getEmployeeByDid" resultMap="EmployeeMap">
+		SELECT * FROM EMPLOYEE WHERE D_ID = #{dId}
+	</select>
+
+	<!-- 添加用户信息 -->
+	<insert id="addEmp" parameterType="com.jm.entity.Employee">
+	   insert into employee
+	   (username,password,e_name,e_sex,e_birth,e_age,e_education,e_origin,n_id,e_idcard,e_phone,e_email,e_address,d_id,e_manager,e_leader,e_region,e_hiredate,e_formal_date,e_image,s_id) 
+	   values
+	   (#{username},#{password},#{eName},#{eSex},#{eBirth},#{eAge},#{eEducation},#{eOrigin},#{nation.nId},#{eIdcard},#{ePhone},#{eEmail},#{eAddress},#{dept.dId},#{eManager},#{eLeader},#{eRegion},#{eHiredate},#{eFormalDate},#{eImage},#{state.sId
+	   })
+	</insert>
+	
+	<!-- 查询所有用户 -->
+	<select id="queryEmA" resultMap="EmployeeMap">
+	    select * from employee
+	         <where>
+			          <if test="eName != '' and eName !=null">
+			              and e_name=#{eName}
+			          </if>
+			     </where>
+	</select>
+	<select id="queryB" resultType="com.jm.entity.Employee">
+	    select * from employee
+	</select>
+	<!-- 查询用户信息 -->
+	<select id="selectById" resultType="com.jm.entity.Employee">
+	   select * from employee where e_id=#{eId}
+	</select>
+	
+	<!-- 修改前查询 -->
+	<select id="queryEmp" parameterType="int" resultMap="EmployeeMap">
+	    select * from employee where e_id=#{id}
+	</select>
+	
+	<!-- 修改用户信息 -->
+	<update id="changeEmp" parameterType="com.jm.entity.Employee">
+	    update employee set e_name=#{eName},password=#{password},e_sex=#{eSex},e_birth=#{eBirth},e_age=#{eAge},e_education=#{eEducation},e_origin=#{eOrigin},n_id=#{nation.nId},e_idcard=#{eIdcard},e_phone=#{ePhone},e_email=#{eEmail},e_address=#{eAddress},d_id=#{dept.dId},e_manager=#{eManager},e_leader=#{eLeader},e_region=#{eRegion},e_hiredate=#{eHiredate},e_formal_date=#{eFormalDate},e_image=#{eImage},s_id=#{state.sId} where username=#{username}
+	</update>
+	
+	<!-- 查询 -->
+	<!-- <select id="queryChangePwd" parameterType="com.jm.entity.Employee" resultType="String">
+	    select employee.password from employee where username=#{username}
+	</select> -->
+	
+	<!-- 删除用户信息  -->
+	<delete id="deleEmp" parameterType="int">
+	    delete from employee where e_id=#{id}
+	</delete>
+	<!--待用 <delete id="deleE" parameterType="int">
+	    delete from role_employee where e_id =#{eId} AND r_id=#{rId}
+	</delete> -->
+	
+	  <!-- 根据用户名查询 -->
+     <select id="getByEmpName" resultMap="RoleA">
+	    select e.e_id,e.username,r.r_id,r.r_name 
+	       from role_employee re
+	                inner join employee e 
+	                      on re.e_id = e.e_id
+	                inner join role r
+	                      on re.r_id = r.r_id
+	                   where e.username=#{username}
+	</select>
+	<!-- 查询信息 -->
+     <select id="get" resultType="com.jm.entity.Role">
+        select r_id,r_name from role where r_id=#{rId}
+     </select>
+	
+	<!-- 根据用户id查询所有的角色 -->
+     <select id="findAllRole" resultType="com.jm.entity.Role">
+     		 select a.r_id,a.r_name,case when b.r_id is not null then true else false end isAssign
+                  from role a 
+                  left join role_employee b on a.r_id = b.r_id and b.e_id=#{eId}
+     </select>
+     
+     <!-- 查询信息 -->
+     <select id="get2" resultType="com.jm.entity.RoleEmployee">
+         select e_id eId,r_id rId
+             from role_employee 
+       	         where e_id=#{eId} AND r_id=#{rId}
+     </select>
+     
+    <!-- 新增  用户角色  信息 -->
+     <insert id="add2" >
+     	insert into role_employee(e_id,r_id) values(#{eId},#{rId})
+    </insert>
+    
+    <!-- 删除 用户角色 信息 -->
+      <delete id="del2">
+         delete from role_employee  where e_id =#{eId} AND r_id=#{rId}
+     </delete> 
+     
+     
+     <update id="assignAllRole">
+        insert into role_employee(e_id,r_id) 
+        select #{eId},r_id from role
+     </update>
+     
+     <update id="cancleAllRole">
+        delete from role_employee where e_id = #{eId}
+     </update>
+     
+     <select id="getEmployeeByEname" resultMap="EmployeeMap">
+     	SELECT * FROM EMPLOYEE WHERE E_ID = (SELECT E_LEADER FROM EMPLOYEE WHERE E_NAME = #{eName})
+     </select>
+</mapper>

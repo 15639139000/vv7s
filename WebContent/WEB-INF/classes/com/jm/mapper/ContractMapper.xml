@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.ContractDao">
+	
+	<resultMap type="Contract" id="contractMap">
+		<id property="id" column="C_ID"/>
+		<result property="number" column="C_NUMBER"/>
+		<result property="companyName" column="C_COMPANY_NAME"/>
+		<result property="startTime" column="C_START_TIME"/>
+		<result property="endTime" column="C_END_TIME"/>
+		<result property="classs" column="C_CLASS"/>
+		<result property="statu" column="C_STATU"/>
+		<result property="totalMoney" column="C_TOTAL_MONEY"/>
+		<result property="employeeName" column="C_EMPLOYEE_NAME"/>
+		<result property="inDate" column="C_INDATE"/>
+	</resultMap>
+	
+	<select id="getAllContract" resultMap="contractMap">
+		SELECT * FROM CONTRACT
+	</select>
+	
+	<insert id="insertBatch">
+		INSERT IGNORE INTO CONTRACT(C_NUMBER, C_COMPANY_NAME, C_START_TIME, C_END_TIME, C_CLASS, C_TOTAL_MONEY, C_EMPLOYEE_NAME, C_INDATE) VALUES
+		<foreach collection="contracts" item="contract" separator=",">
+			(#{contract.number}, #{contract.companyName}, #{contract.startTime}, #{contract.endTime}, #{contract.classs}, #{contract.totalMoney}, #{contract.employeeName}, #{contract.inDate})
+		</foreach>
+	</insert>
+	
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.VisitDao">
+	
+	<resultMap type="Visit" id="visitMap">
+		<id property="id" column="V_ID"/>
+		<result property="customer" column="V_CUSTOMER"/>
+		<result property="customerNature" column="V_CUSTOMER_NATURE"/>
+		<result property="indestry" column="V_INDUSTRY"/>
+		<result property="contacts" column="V_CONTACTS"/>
+		<result property="product1" column="V_Y_PRODUCT"/>
+		<result property="product2" column="V_D_PRODUCT"/>
+		<result property="lavel" column="V_LAVEL"/>
+		<result property="visit" column="V_VISIT"/>
+		<result property="returnTime" column="V_R_TIME"/>
+		<result property="nextReturnTime" column="V_L_R_TIME"/>
+		<result property="person" column="V_PERSON"/>
+		<result property="information" column="V_INFORMATION"/>
+	</resultMap>
+	
+	<select id="getAllVisit" resultMap="visitMap">
+		SELECT * FROM VISIT
+	</select>
+	
+	<select id="getAll" resultMap="visitMap">
+		SELECT * FROM VISIT WHERE 1 = 1
+		<!--  
+			com.jm.dao.VisitDao.getAll() 方法还有参数，完善数据表时需要添加上查询条件
+		-->
+	</select>
+	
+	<select id="advancedSearch" resultMap="visitMap">
+		SELECT * FROM VISIT WHERE 1 = 1
+		<if test="customer != '' and customer != null">
+			AND V_CUSTOMER = #{customer}
+		</if>
+		<if test="customerNature != '' and customerNature != null">
+			AND V_CUSTOMER_NATURE = #{customerNature}
+		</if>
+		<if test="indestry != '' and indestry != null">
+			AND V_INDUSTRY = #{indestry}
+		</if>
+		<if test="product1 != '' and product1 != null">
+			AND V_Y_PRODUCT = #{product1}
+		</if>
+		<if test="product2 != '' and product2 != null">
+			AND V_D_PRODUCT = #{product2}
+		</if>
+		<if test="visit != '' and visit != null">
+			AND V_VISIT = #{visit}
+		</if>
+		<if test="returnTime != '' and returnTime != null">
+			AND V_R_TIME = #{returnTime}
+		</if>
+		<if test="nextReturnTime != '' and nextReturnTime != null">
+			AND V_L_R_TIME = #{nextReturnTime}
+		</if>
+	</select>
+	
+	<insert id="insertBatch">
+		INSERT IGNORE INTO VISIT(V_CUSTOMER, V_CUSTOMER_NATURE, V_INDUSTRY, V_CONTACTS, V_LAVEL, V_L_R_TIME, V_PERSON, V_INFORMATION) VALUES
+		<foreach collection="visits" item="visit" separator=",">
+			(#{visit.customer}, #{visit.customerNature}, #{visit.indestry}, #{visit.contacts}, #{visit.lavel}, #{visit.nextReturnTime}, #{visit.person}, #{visit.information})
+		</foreach>
+	</insert>
+</mapper>

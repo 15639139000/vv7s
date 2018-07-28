@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.AllTaskDao">
+	
+	<resultMap type="com.jm.entity.HistoryModel" id="all">
+		       <id column="ID_" property="id" /><!-- 任务id -->
+		       <result column="NAME_" property="name"/><!-- 申请名称 -->
+		       <result column="ASSIGNEE_" property="assignee"/><!-- 申请人 -->
+		       <result column="START_TIME_" property="startTime"/><!-- 申请时间 -->
+		       <result column="END_TIME_" property="endTime"/><!-- 结束时间  -->
+		       <result column="PROC_INST_ID_" property="processInstanceId"/><!-- 流程实例id -->
+		       <result column="PROC_DEF_ID_" property="processDefinitionId"/><!-- 流程定义id -->
+	</resultMap>
+	
+ 
+       <!-- 查询所有任务，并按条件查询 -->
+           <select id="queryAl" resultMap="all">
+                 select distinct RES.*
+
+           				from ACT_HI_TASKINST RES 
+
+								
+
+								inner join ACT_HI_VARINST A0 
+								on RES.PROC_INST_ID_ = A0.PROC_INST_ID_ 
+
+										<where>
+				                           <if test="startTime != '' and startTime != null ">
+				                               and RES.START_TIME_ = #{startTime}
+				                           </if>
+				                           <if test="endTime != '' and endTime != null ">
+				                               and RES.END_TIME_ = #{endTime} 
+				                           </if>
+				                           <if test="eName != '' and eName != null">
+				                               and RES.ASSIGNEE_ = #{eName}
+				                           </if>
+				                           <if test="forCla != '' and forCla != null">
+				                               and D.NAME_ = #{forCla}
+				                           </if>
+				                           <if test="state != '' and state != null">
+				                               and A0.TEXT_ = #{state}
+				                           </if>
+                                      </where>
+           </select>
+<!--inner join ACT_RE_PROCDEF D 
+								on RES.PROC_DEF_ID_ = D.ID_   -->
+	<!-- 任务总数 -->
+	<select id="count" resultType="Integer">
+		SELECT COUNT(0) FROM act_hi_taskinst
+	</select>
+	
+	
+	<!-- 根据流程定义id查询出流程的名称 -->
+	<select id="getProcdefName" resultType="String">
+		SELECT NAME_ FROM `ACT_RE_PROCDEF` where id_ = #{id}
+	</select>
+	
+	<!-- 查询所有流程定义的名称 -->
+	<select id="getDeployment" resultType="com.jm.entity.Deployment">
+	   SELECT NAME_ FROM ACT_RE_DEPLOYMENT
+	</select>
+	
+	<!-- 所有申请状态 -->
+	<select id="getMessage" resultType="com.jm.entity.Variables">
+	   select DISTINCT text_ from act_hi_varinst where name_='message'
+	</select>
+
+
+<!-- 查询一级菜单下的子菜单 -->
+    <select id="queryMenu" parameterType="java.util.List" resultType="com.jm.entity.Jurisdiction">
+        SELECT * FROM jurisdiction WHERE j_parent IN (SELECT j_id FROM jurisdiction WHERE j_name IN
+             <foreach collection="parentNames" index="index" item="item" open="(" separator="," close=")">
+            		#{item} 
+        		</foreach>  
+        )
+    </select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.RoleOperationDao">
+	
+	
+	
+	<!-- 获取所有角色权限 -->
+	<select id="getRoleOperationById" resultType="RoleOperation">
+		SELECT * FROM ROLE_OPERATION WHERE R_ID = #{rId} AND O_ID = #{oId}  
+	</select>
+	<!-- 增加操作权限 -->
+	<insert id="addRoleOperation" parameterType="RoleOperation">
+		INSERT IGNORE INTO  ROLE_OPERATION(ID,R_ID,O_ID) VALUES(NULL,#{rId},#{oId})
+	</insert>
+	
+	<!-- 删除操作权限 -->
+	<delete id="delRoleOperation" parameterType="Integer">
+		DELETE FROM ROLE_OPERATION WHERE R_ID = #{rId} AND O_ID = #{oId}
+	</delete>
+	
+	<!-- 修改操作权限 -->
+	<update id="editOperationById" parameterType="Operation">
+		UPDATE OPERATION SET 
+					O_NAME = #{oName},O_DESC = #{oDesc} WHERE O_ID = #{oId}
+	</update>
+	
+</mapper>

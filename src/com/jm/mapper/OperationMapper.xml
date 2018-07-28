@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.OperationDao">
+	
+	<resultMap type="Operation" id="OperationMap">
+		<id column="O_ID" property="oId"/>
+		<result column="O_NAME" property="oName"/>
+		<result column="O_DESC" property="oDesc"/>
+	</resultMap>
+	
+	<!-- 获取所有操作权限 -->
+	<select id="getAll" resultMap="OperationMap">
+		SELECT O_ID,O_NAME,O_DESC FROM OPERATION 
+	</select>
+	
+	<!-- 增加操作权限 -->
+	<insert id="insertOperation" parameterType="Operation">
+		INSERT IGNORE INTO  OPERATION(O_ID,O_NAME,O_DESC) VALUES(#{oId},#{oName},#{oDesc})
+	</insert>
+	
+	<!-- 删除操作权限 -->
+	<delete id="delOperationById" parameterType="Integer">
+		DELETE FROM OPERATION WHERE O_ID = #{oId}
+	</delete>
+	
+	<!-- 修改操作权限 -->
+	<update id="editOperationById" parameterType="Operation">
+		UPDATE OPERATION SET 
+					O_NAME = #{oName},O_DESC = #{oDesc} WHERE O_ID = #{oId}
+	</update>
+	
+</mapper>

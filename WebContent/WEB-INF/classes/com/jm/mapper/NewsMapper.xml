@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.NewsDao">
+	
+	<resultMap type="News" id="NewsMap">
+		<id column="NEWS_ID" property="newsId"/>
+		<result column="NEWS_TITLE" property="newsTitle"/>
+		<result column="NEWS_CONTENT" property="newsContent"/>
+		<result column="NEWS_DATE" property="newsDate"/>
+		<association column="C_ID" property="company" select="com.jm.dao.CompanyDao.getCompanyById"></association>
+		<association column="D_ID" property="dept" select="com.jm.dao.DepartmentDao.getDepartmentByDid"></association>
+		<association column="E_ID" property="employee" select="com.jm.dao.EmployeeDao.getEmployeeByEid"></association>
+	</resultMap>
+	
+	<!-- 获取所有通知公告 -->
+	<select id="getAll" resultMap="NewsMap">
+		SELECT * FROM NEWS ORDER BY NEWS_DATE DESC
+	</select>
+	
+	<!-- 根据id查询公告详情 -->
+	<select id="getNewsById" parameterType = "int" resultMap="NewsMap">
+		SELECT * FROM NEWS WHERE NEWS_ID = #{newsId}
+	</select>
+	
+	<!-- 首页根据时间显示最新的七条 -->
+	<select id="getNewsByDate" resultMap="NewsMap">
+		SELECT * FROM NEWS ORDER BY NEWS_DATE DESC LIMIT 0,7
+	</select>
+	
+	<!-- 发布通知公告 -->
+	<insert id="insertNews" parameterType="News">
+		INSERT IGNORE INTO NEWS VALUES(NULL, #{newsTitle}, #{newsContent}, NOW(), #{company.cId}, #{dept.dId}, #{employee.eId})
+	</insert>
+	
+	<!-- 删除通知公告 -->
+	<delete id="delNewsById" parameterType="Integer">
+		DELETE FROM NEWS WHERE NEWS_ID = #{newsId}
+	</delete>
+	
+	<!-- 修改通知公告 -->
+	<update id="editNewsById" parameterType="News">
+		UPDATE NEWS SET 
+					NEWS_TITLE = #{newsTitle}, NEWS_CONTENT = #{newsContent}, 
+					NEWS_DATE = NOW(), C_ID = #{company.cId}, D_ID = #{dept.dId}, 
+					E_ID = #{employee.eId} WHERE NEWS_ID = #{newsId}
+	</update>
+	
+</mapper>

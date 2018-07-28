@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.EmployeeStyleDao">
+	
+	<resultMap type="EmployeeStyle" id="EmployeeStyleMap">
+		<id column="ES_ID" property="esId"/>
+		<result column="ES_TITLE" property="esTitle"/>
+		<result column="ES_CONTENT" property="esContent"/>
+		<result column="ES_DATE" property="esDate"/>
+		<association column="C_ID" property="company" select="com.jm.dao.CompanyDao.getCompanyById"></association>
+		<association column="D_ID" property="dept" select="com.jm.dao.DepartmentDao.getDepartmentByDid"></association>
+		<association column="E_ID" property="employee" select="com.jm.dao.EmployeeDao.getEmployeeByEid"></association>
+	</resultMap>
+	
+	<!-- 获取所有通知公告 -->
+	<select id="getAll" resultMap="EmployeeStyleMap">
+		SELECT * FROM EMPLOYEE_STYLE ORDER BY ES_DATE DESC
+	</select>
+	
+	<!-- 根据id查询公告详情 -->
+	<select id="getEmployeeStyleById" parameterType = "int" resultMap="EmployeeStyleMap">
+		SELECT * FROM EMPLOYEE_STYLE WHERE ES_ID = #{esId}
+	</select>
+	
+	<!-- 首页根据时间显示最新的七条 -->
+	<select id="getEmployeeStyleByDate" resultMap="EmployeeStyleMap">
+		SELECT * FROM EMPLOYEE_STYLE ORDER BY ES_DATE DESC LIMIT 0,7
+	</select>
+	
+	<!-- 发布通知公告 -->
+	<insert id="insertEmployeeStyle" parameterType="EmployeeStyle">
+		INSERT IGNORE INTO EMPLOYEE_STYLE VALUES(NULL, #{esTitle}, #{esContent}, NOW(), #{company.cId}, #{dept.dId}, #{employee.eId})
+	</insert>
+	
+	<!-- 删除通知公告 -->
+	<delete id="delEmployeeStyleById" parameterType="Integer">
+		DELETE FROM EMPLOYEE_STYLE WHERE ES_ID = #{esId}
+	</delete>
+	
+	<!-- 修改通知公告 -->
+	<update id="editEmployeeStyleById" parameterType="EmployeeStyle">
+		UPDATE EMPLOYEE_STYLE SET 
+					ES_TITLE = #{esTitle}, ES_CONTENT = #{esContent}, 
+					ES_DATE = NOW(), C_ID = #{company.cId}, D_ID = #{dept.dId}, 
+					E_ID = #{employee.eId} WHERE ES_ID = #{esId}
+	</update>
+	
+</mapper>

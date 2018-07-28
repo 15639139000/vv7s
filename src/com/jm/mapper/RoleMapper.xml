@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.RoleDao">
+	
+	<!-- <cache></cache> -->
+	<resultMap type="Role" id="RoleMap">
+		<id column="R_ID" property="rId"/>
+		<result column="R_NAME" property="rName"/>
+		<result column="R_DESC" property="rDesc"/>
+		<result column="R_EXT" property="rExt"/>
+		<result column="R_ORDER" property="rOrder"/>
+		<result column="R_DATE" property="rDate"/>
+	</resultMap>
+	<!-- 拥有指定权限编号的所有角色集合 -->
+	<select id="getRoleByJid" resultType="String">
+		SELECT r_name FROM ROLE WHERE R_ID IN(SELECT R_ID FROM JURISDICTION_ROLE WHERE J_ID = #{jId})
+	</select>
+	<!-- 获取所有角色 -->
+	<select id="getAll" resultMap="RoleMap">
+		SELECT * FROM ROLE ORDER BY R_ORDER ASC
+	</select>
+	<!-- 根据id获取角色 -->
+	<select id="getRoleById" parameterType="Integer" resultType="Role">
+		SELECT * FROM ROLE WHERE R_ID = #{rId}
+	</select>
+	<!-- 根据id获取所有操作权限 -->
+	<select id="findAllOperation" resultType="Operation">
+		SELECT O.O_ID,O.O_NAME,O.O_DESC,CASE WHEN RO.R_ID IS NOT NULL THEN TRUE ELSE FALSE END ISASSIGN
+       	FROM OPERATION O 
+      	LEFT JOIN ROLE_OPERATION RO ON O.O_ID = RO.O_ID AND RO.R_ID = #{rId}
+	</select>
+	<!-- 增加角色 -->
+	<insert id="insertRole" parameterType="Role">
+		INSERT IGNORE INTO ROLE(R_ID,R_NAME,R_DESC,R_EXT,R_ORDER,R_DATE) 
+		VALUES
+		(NULL,#{rName},#{rDesc},NULL,#{rOrder},NOW())
+	</insert>
+	
+	<!-- 删除角色 -->
+	<delete id="delRoleById" parameterType="Integer">
+		DELETE FROM ROLE WHERE R_ID = #{rId}
+	</delete>
+	
+	<!-- 修改角色 -->
+	<update id="editRoleById" parameterType="Role">
+		UPDATE ROLE 
+		SET 
+		R_NAME = #{rName}, 
+		R_DESC = #{rDesc}
+		WHERE 
+		R_ID = #{rId}
+	</update>
+	 <!-- 选中所有 -->
+     <update id="assignAllOperation">
+        INSERT INTO ROLE_OPERATION (R_ID,O_ID) 
+        SELECT #{rId},O_ID FROM OPERATION 
+     </update>
+     <!-- 取消所有 -->
+     <update id="cancleAllOperation">
+       DELETE FROM ROLE_OPERATION WHERE R_ID = #{rId}
+     </update>
+     <!-- 获取所有菜单-->
+     <select id="queryAllMenu" resultType="Jurisdiction">      	
+			SELECT DISTINCT J.J_ID,J.J_PARENT,J.J_NAME,J.J_IS_PARENT
+			FROM
+				JURISDICTION J
+					
+			ORDER BY J.J_PARENT ASC,J.J_ID ASC
+     </select>
+     <!-- 当前员工的所有角色id获取的菜单权限 -->
+     <select id="queryAllMenuByRolrIds" resultType="Jurisdiction">  
+			SELECT
+				DISTINCT J1.J_ID,J1.J_PARENT,J1.J_NAME,J1.J_IS_PARENT,J2.*
+			FROM
+				JURISDICTION J1
+			LEFT JOIN JURISDICTION_ROLE J2 ON J1.J_ID = J2.J_ID
+			WHERE
+				J2.R_ID IN
+				
+				<foreach collection="roleIds" item="rId" index="index"  
+            		open="(" close=")" separator=",">  
+            		#{roleIds} 
+        		</foreach>  
+			ORDER BY J1.J_PARENT ASC, J1.J_ID ASC  
+     </select>
+     <!-- 当前角色id获取的菜单权限 -->
+     <select id="queryAllMenuByRolrId" resultType="Jurisdiction">
+     		SELECT
+				DISTINCT J1.J_ID,J1.J_PARENT,J1.J_NAME,J1.J_IS_PARENT,J2.*
+			FROM
+				JURISDICTION J1,
+			 JURISDICTION_ROLE J2 WHERE J1.J_ID = J2.J_ID
+			AND
+				J2.R_ID = #{rId}		
+			ORDER BY J1.J_PARENT ASC, J1.J_ID ASC         
+     </select>
+     <!-- 根据员工id获取角色信息 -->
+     <select id="getRoleIdsByEId" resultType="Role">
+		SELECT  * FROM ROLE_EMPLOYEE RE LEFT JOIN ROLE R ON RE.R_ID = R.R_ID WHERE RE.E_ID=#{eId}
+	</select>
+</mapper>

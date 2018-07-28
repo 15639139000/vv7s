@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jm.dao.OrderDao">
+	
+	<resultMap type="Order" id="orderMap">
+		<id property="oId" column="O_ID"/>
+		<result property="oDate" column="O_DATE"/>
+		<result property="eName" column="E_NAME"/>
+		<result property="oStatu" column="O_STATU"/>
+		<result property="cName" column="C_NAME"/>
+		<result property="produce" column="O_PRODUCE"/>
+		<result property="oNumber" column="O_NUMBER"/>
+		<result property="oPrice" column="O_PRICE"/>
+		<result property="oRmoney" column="O_RMONEY"/>
+	</resultMap>
+	
+	<select id="getAll" resultMap="orderMap">
+		SELECT * FROM `ORDER` where 1 = 1
+		<if test="stime != null and stime != ''">
+			AND O_DATE between #{stime} AND #{etime}
+		</if>
+		<if test="ename != null and ename != ''">
+			AND E_NAME = #{ename}
+		</if>
+		<if test="company != null and company != ''">
+			AND C_NAME = #{company}
+		</if>
+	</select>
+	
+	<insert id="insertBatch">
+		INSERT IGNORE INTO `ORDER` VALUES
+		<foreach collection="orders" item="order" separator=",">
+			(NULL, #{order.oDate}, #{order.eName}, #{order.oStatu}, #{order.cName}, #{order.produce}, #{order.oNumber}, #{order.oPrice}, #{order.oRmoney})
+		</foreach>
+	</insert>
+
+	<select id="advancedSearch" resultMap="orderMap">
+		SELECT * FROM `ORDER` WHERE 1 = 1 AND O_ID <![CDATA[ < ]]> 20
+<!--		暂无完成数据表，暂不处理  -->
+<!-- 		<if test="number != null and number != ''"> -->
+<!-- 			AND O_NUMBER = #{number} -->
+<!-- 		</if> -->
+<!-- 		<if test="salesman != null and salesman != ''"> -->
+<!-- 			AND E_NAME = #{salesman} -->
+<!-- 		</if> -->
+<!-- 		<if test="customer != null and customer != ''"> -->
+<!-- 			AND O_CUSTOMER = #{customer} -->
+<!-- 		</if> -->
+<!-- 		<if test="agent != null and agent != ''"> -->
+<!-- 			AND O_AGENT = #{agent} -->
+<!-- 		</if> -->
+<!-- 		<if test="delivery != null and delivery != ''"> -->
+<!-- 			AND O_DELIVERY = #{delivery} -->
+<!-- 		</if> -->
+<!-- 		<if test="issuance != null and issuance != ''"> -->
+<!-- 			AND O_DATE = #{issuance} -->
+<!-- 		</if> -->
+<!-- 		<if test="sales != null and sales != ''"> -->
+<!-- 			AND O_SALES = #{sales} -->
+<!-- 		</if> -->
+<!-- 		<if test="information != null and information != ''"> -->
+<!-- 			AND O_INFORMATION = #{information} -->
+<!-- 		</if> -->
+<!-- 		<if test="payments != null and payments != ''"> -->
+<!-- 			AND O_PAYMENTS = #{payments} -->
+<!-- 		</if> -->
+<!-- 		<if test="contacts != null and contacts != ''"> -->
+<!-- 			AND O_CONTACTS = #{contacts} -->
+<!-- 		</if> -->
+<!-- 		<if test="lavel != null and lavel != ''"> -->
+<!-- 			AND O_LAVEL = #{lavel} -->
+<!-- 		</if> -->
+<!-- 		<if test="phone != null and phone != ''"> -->
+<!-- 			AND O_PHONE = #{phone} -->
+<!-- 		</if> -->
+<!-- 		<if test="statu != null and statu != ''"> -->
+<!-- 			AND O_STATU = #{statu} -->
+<!-- 		</if> -->
+	</select>
+	
+</mapper>
